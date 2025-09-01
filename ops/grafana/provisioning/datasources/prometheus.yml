@@ -1,0 +1,7 @@
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://sn_prometheus:9090   # usa el nombre del container/servicio de Prometheus
+    isDefault: true

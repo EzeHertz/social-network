@@ -1,0 +1,8 @@
+FROM grafana/grafana:latest
+
+# Copiamos dashboards a una ruta estándar
+COPY dashboards /var/lib/grafana/dashboards
+
+# Copiamos configuración de provisioning
+COPY provisioning/dashboards.yml /etc/grafana/provisioning/dashboards/dashboards.yml
+COPY provisioning/datasources/prometheus.yml /etc/grafana/provisioning/datasources/prometheus.yml

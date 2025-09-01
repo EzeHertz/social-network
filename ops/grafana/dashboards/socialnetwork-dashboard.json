@@ -1,0 +1,167 @@
+{
+  "__requires": [
+    { "type": "grafana", "id": "grafana", "name": "Grafana", "version": "9.5.0" },
+    { "type": "panel", "id": "timeseries", "name": "Time series", "version": "" },
+    { "type": "panel", "id": "stat", "name": "Stat", "version": "" },
+    { "type": "datasource", "id": "prometheus", "name": "Prometheus", "version": "2.0.0" }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "type": "dashboard",
+        "name": "Annotations & Alerts",
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)"
+      }
+    ]
+  },
+  "editable": true,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Error rate %",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * (sum(rate(http_server_requests_seconds_count{application=\"social-network\",job=\"$job\",outcome=~\"CLIENT_ERROR|SERVER_ERROR\",uri=~\"$uri\"}[5m])) / sum(rate(http_server_requests_seconds_count{application=\"social-network\",job=\"$job\",uri=~\"$uri\"}[5m])))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green" },
+              { "color": "orange", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "RPS (req/s)",
+      "gridPos": { "h": 6, "w": 9, "x": 6, "y": 0 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(http_server_requests_seconds_count{application=\"social-network\",job=\"$job\",uri=~\"$uri\"}[1m]))",
+          "legendFormat": "RPS"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "req/s" } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Errores/min (4xx + 5xx)",
+      "gridPos": { "h": 6, "w": 9, "x": 15, "y": 0 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(http_server_requests_seconds_count{application=\"social-network\",job=\"$job\",outcome=~\"CLIENT_ERROR|SERVER_ERROR\",uri=~\"$uri\"}[1m])) * 60"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "req/min" } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Latency p95 (s)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{application=\"social-network\",job=\"$job\",uri=~\"$uri\"}[5m])))"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Heap usage %",
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 6 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * sum(jvm_memory_used_bytes{application=\"social-network\",job=\"$job\",area=\"heap\"}) / sum(jvm_memory_max_bytes{application=\"social-network\",job=\"$job\",area=\"heap\"})"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green" },
+              { "color": "orange", "value": 70 },
+              { "color": "red", "value": 85 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Hikari active connections",
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 6 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg(hikaricp_connections_active{application=\"social-network\",job=\"$job\"})"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Top endpoints por RPS",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 14 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(10, sum by (uri) (rate(http_server_requests_seconds_count{application=\"social-network\",job=\"$job\"}[5m])))",
+          "legendFormat": "{{uri}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "req/s" } }
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "application",
+        "type": "query",
+        "label": "application",
+        "datasource": "Prometheus",
+        "query": "label_values(http_server_requests_seconds_count, application)",
+        "current": { "selected": true, "text": "social-network", "value": "social-network" }
+      },
+      {
+        "name": "job",
+        "type": "query",
+        "label": "job",
+        "datasource": "Prometheus",
+        "query": "label_values(up, job)",
+        "current": { "selected": true, "text": "socialnetwork", "value": "socialnetwork" }
+      },
+      {
+        "name": "uri",
+        "type": "query",
+        "label": "uri",
+        "datasource": "Prometheus",
+        "query": "label_values(http_server_requests_seconds_count{application=\"social-network\",job=\"$job\"}, uri)",
+        "current": { "selected": true, "text": "All", "value": ".*" },
+        "includeAll": true,
+        "allValue": ".*"
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "refresh": "10s",
+  "title": "SocialNetwork — Observability (Starter)",
+  "uid": "socialnetwork-observability",
+  "version": 2
+}

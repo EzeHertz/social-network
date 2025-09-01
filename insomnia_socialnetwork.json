@@ -1,0 +1,102 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-08-29T22:00:00.000Z",
+  "__export_source": "social-network-insomnia",
+  "resources": [
+    {
+      "_id": "wrk_socialnetwork",
+      "parentId": null,
+      "modified": 0,
+      "created": 0,
+      "name": "Social Network API",
+      "description": "Insomnia collection for Social Network Spring Boot app",
+      "scope": "collection",
+      "_type": "workspace"
+    },
+    {
+      "_id": "fld_users",
+      "parentId": "wrk_socialnetwork",
+      "modified": 0,
+      "created": 0,
+      "name": "Users",
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_tweets",
+      "parentId": "wrk_socialnetwork",
+      "modified": 0,
+      "created": 0,
+      "name": "Tweets",
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_create_user",
+      "parentId": "fld_users",
+      "modified": 0,
+      "created": 0,
+      "url": "http://localhost:8080/users",
+      "name": "Create User",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n \"username\": \"alice\", \"password\": \"alice\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "req_follow_user",
+      "parentId": "fld_users",
+      "modified": 0,
+      "created": 0,
+      "url": "http://localhost:8080/users/{followerId}/follow/{foloweeId}",
+      "name": "Follow User",
+      "method": "POST",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "_type": "request"
+    },
+    {
+      "_id": "req_create_tweet",
+      "parentId": "fld_tweets",
+      "modified": 0,
+      "created": 0,
+      "url": "http://localhost:8080/tweets",
+      "name": "Create Tweet",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"authorId\": \"U1\",\n  \"content\": \"Hola desde Insomnia!\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "req_timeline",
+      "parentId": "fld_tweets",
+      "modified": 0,
+      "created": 0,
+      "url": "http://localhost:8080/users/{userId}/timeline?limit=10",
+      "name": "Get Timeline",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "_type": "request"
+    }
+  ]
+}

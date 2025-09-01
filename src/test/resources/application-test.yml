@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/socialnetwork
+    username: sn
+    password: sn
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  sql:
+    init:
+      mode: never
+  data:
+    redis:
+      host: localhost   # <- este valor lo pisa Testcontainers en runtime
+      port: 6379
